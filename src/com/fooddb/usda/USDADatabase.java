@@ -20,13 +20,15 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.fooddb.Food;
 import com.fooddb.FoodInfo;
+import com.fooddb.Nutrient;
 import com.fooddb.Queryable;
 
 import utils.QueryBuilder;
 
 public class USDADatabase implements Queryable {
 	
-	private final String SEARCH_URL =  "https://api.nal.usda.gov/ndb/search/";
+	private static final String SEARCH_URL = "https://api.nal.usda.gov/ndb/search/";
+	private static final String REPORT_URL = "https://api.nal.usda.gov/ndb/reports/";
 	
 	private String apiKey;
 	
@@ -68,18 +70,22 @@ public class USDADatabase implements Queryable {
 		if(response == null || response.isNull()) {
 			return result;
 		}
-		JsonArray foodList = response.asObject().get("list").asObject().get("item").asArray();
-		if(foodList == null) {
+		
+		JsonArray foodList = null;
+		try {
+			foodList = response.asObject().get("list").asObject().get("item").asArray();
+		} catch (Exception e) {
 			return result;
 		}
 		
 		for(JsonValue food : foodList ) {
 			USDAFoodInfo info = new USDAFoodInfo();
 			info.name = food.asObject().getString("name", "");
-			info.name = info.name.substring(1, info.name.length() - 1);
-			info.ndbNo = Integer.parseInt(food.asObject().getString("ndbno", "-1"));
-			info.branded = food.asObject().getString("ds", "SR") == "BL";
-			result.add(info);
+			info.ndbNo = food.asObject().getString("ndbno", "-1");
+			info.branded = food.asObject().getString("ds", "SR").equals("BL");
+			if(!info.ndbNo.equals("-1")) {
+				result.add(info);				
+			}
 		}
 		
 		return result;
@@ -87,10 +93,66 @@ public class USDADatabase implements Queryable {
 
 	@Override
 	public Food report(FoodInfo info) {
-		return null;
+		QueryBuilder builder = new QueryBuilder(REPORT_URL);
+		builder.addParam("api_key", apiKey);
+		builder.addParam("format", "json");
+		builder.addParam("ndbno", ((USDAFoodInfo) info).ndbNo);
+		builder.addParam("type", "b");
+		
+		JsonValue response = request(builder.toString());
+		if(response == null || response.isNull()) {
+			return null;
+		}
+		Food food = new Food(info, null);
+		
+		JsonArray nutrientList = null;
+		try {
+			nutrientList = response.asObject().get("report").asObject().get("food").asObject().get("nutrients").asArray();
+		} catch (Exception e) {
+			return null;
+		}
+		
+		for(JsonValue nutrient : nutrientList) {
+			USDANutrient n = new USDANutrient();
+			n.ndbNo = nutrient.asObject().getString("nutrient_id", "-1");
+			n.id = fromNutrientNdbNo(n.ndbNo);
+			n.unit = nutrient.asObject().getString("unit", "");
+			n.value = Double.parseDouble(nutrient.asObject().getString("value", "0"));
+			
+			if(n.id != null) {
+				food.nutrients.put(n.id, n);
+			}
+		}
+		
+		return food;
 	}
 	
-	private JsonValue request(String query) {
+	private static Nutrient.Id fromNutrientNdbNo(String ndbno) {
+		switch(ndbno) {
+		case "255": return Nutrient.Id.WATER;
+		case "208": return Nutrient.Id.ENERGY;
+		case "203": return Nutrient.Id.PROTEIN;
+		case "204": return Nutrient.Id.FAT;
+		case "205": return Nutrient.Id.CARBOHYDRATE;
+		case "291": return Nutrient.Id.FIBER;
+		case "269": return Nutrient.Id.SUGAR;
+		case "301": return Nutrient.Id.CALCIUM;
+		case "303": return Nutrient.Id.IRON;
+		case "304": return Nutrient.Id.MAGNESIUM;
+		case "305": return Nutrient.Id.PHOSPHORUS;
+		case "306": return Nutrient.Id.POTASSIUM;
+		case "307": return Nutrient.Id.SODIUM;
+		case "309": return Nutrient.Id.ZINC;
+		case "606": return Nutrient.Id.FAT_SATURATED;
+		case "645": return Nutrient.Id.FAT_MONOUNSATURATED;
+		case "656": return Nutrient.Id.FAT_POLYUNSATURATED;
+		case "601": return Nutrient.Id.CHOLESTEROL;
+		case "262": return Nutrient.Id.CAFFEINE;
+		default: return null;
+		}
+	}
+	
+	private static JsonValue request(String query) {
 		try {
 			URL url = new URL(query);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
