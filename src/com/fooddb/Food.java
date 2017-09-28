@@ -11,6 +11,14 @@ public class Food {
 		this.nutrients = (nutrients == null) ? new HashMap<>() : nutrients;
 	}
 	
+	public double valueOf(Nutrient.Id nutrient) {
+		if(nutrients.containsKey(nutrient)) {
+			return nutrients.get(nutrient).value;
+		} else {
+			return 0.0;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(String.format("[Food: %s]", info));

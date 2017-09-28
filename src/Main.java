@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import com.fooddb.Food;
 import com.fooddb.FoodInfo;
+import com.fooddb.Nutrient;
 import com.fooddb.usda.USDADatabase;
 
 public class Main {
@@ -14,9 +15,10 @@ public class Main {
 			System.out.println(f.toString());			
 		}
 		
-		Food butter = db.report(info.get(0));
+		Food butter = db.report(info.get(1));
 		
-		System.out.println(butter);
+		double sum = 0;
+		System.out.println(sum);
 	}
 
 }

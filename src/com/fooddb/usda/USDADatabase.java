@@ -73,7 +73,10 @@ public class USDADatabase implements Queryable {
 		
 		JsonArray foodList = null;
 		try {
-			foodList = response.asObject().get("list").asObject().get("item").asArray();
+			foodList = response
+					.asObject().get("list")
+					.asObject().get("item")
+					.asArray();
 		} catch (Exception e) {
 			return result;
 		}
@@ -107,7 +110,11 @@ public class USDADatabase implements Queryable {
 		
 		JsonArray nutrientList = null;
 		try {
-			nutrientList = response.asObject().get("report").asObject().get("food").asObject().get("nutrients").asArray();
+			nutrientList = response
+					.asObject().get("report")
+					.asObject().get("food")
+					.asObject().get("nutrients")
+					.asArray();
 		} catch (Exception e) {
 			return null;
 		}
