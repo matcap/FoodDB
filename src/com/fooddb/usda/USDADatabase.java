@@ -32,26 +32,8 @@ public class USDADatabase implements Queryable {
 	
 	private String apiKey;
 	
-	public USDADatabase(String cfgFile) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(cfgFile)));
-			HashMap<String, String> config = new HashMap<>();
-			for(String line = reader.readLine(); line != null; line = reader.readLine()) {
-				config.put(
-					line.split("=")[0].trim(), 
-					line.split("=")[1].trim()
-				);
-			}
-			if(config.containsKey("api_key")) {
-				apiKey = config.get("api_key");
-			} else {
-				apiKey = "";
-			}
-			
-		} catch (IOException e) {
-			apiKey = "";
-		}
-		
+	public USDADatabase(String apiKey) {
+		this.apiKey = apiKey;
 	}
 	
 	@Override
