@@ -6,7 +6,7 @@ import com.fooddb.Nutrient;
 import com.fooddb.usda.USDAApi;
 import com.fooddb.usda.USDADatabase;
 
-public class Main {
+public class TestClass {
 
 	public static void main(String[] args) {
 		USDADatabase db = new USDADatabase(USDAApi.key);
