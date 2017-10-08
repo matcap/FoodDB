@@ -12,7 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;

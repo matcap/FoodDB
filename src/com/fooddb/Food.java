@@ -8,7 +8,7 @@ public class Food {
 	
 	public Food(FoodInfo info, HashMap<Nutrient.Id, Nutrient> nutrients) {
 		this.info = (info == null) ? new FoodInfo() : info;
-		this.nutrients = (nutrients == null) ? new HashMap<>() : nutrients;
+		this.nutrients = (nutrients == null) ? new HashMap<Nutrient.Id, Nutrient>() : nutrients;
 	}
 	
 	public double valueOf(Nutrient.Id nutrient) {
