@@ -6,6 +6,7 @@ public class Food {
 	public FoodInfo info;
 	public HashMap<Nutrient.Id, Nutrient> nutrients;
 	
+	
 	public Food(FoodInfo info, HashMap<Nutrient.Id, Nutrient> nutrients) {
 		this.info = (info == null) ? new FoodInfo() : info;
 		this.nutrients = (nutrients == null) ? new HashMap<Nutrient.Id, Nutrient>() : nutrients;

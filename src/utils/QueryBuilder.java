@@ -1,6 +1,5 @@
 package utils;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class QueryBuilder {

@@ -1,21 +1,13 @@
 package com.fooddb.usda;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.fooddb.Food;
 import com.fooddb.FoodInfo;
@@ -49,7 +41,7 @@ public class USDADatabase implements Queryable {
 		
 		JsonValue response = request(builder.toString());		
 		if(response == null || response.isNull()) {
-			return result;
+			return null;
 		}
 		
 		JsonArray foodList = null;
@@ -59,7 +51,7 @@ public class USDADatabase implements Queryable {
 					.asObject().get("item")
 					.asArray();
 		} catch (Exception e) {
-			return result;
+			return null;
 		}
 		
 		for(JsonValue food : foodList ) {
@@ -67,6 +59,7 @@ public class USDADatabase implements Queryable {
 			info.name = food.asObject().getString("name", "");
 			info.ndbNo = food.asObject().getString("ndbno", "-1");
 			info.branded = food.asObject().getString("ds", "SR").equals("BL");
+			info.source = this;
 			if(!info.ndbNo.equals("-1")) {
 				result.add(info);				
 			}
@@ -150,6 +143,11 @@ public class USDADatabase implements Queryable {
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "USDA";
 	}
 	
 }

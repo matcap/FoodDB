@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import com.fooddb.Food;
 import com.fooddb.FoodInfo;
-import com.fooddb.Nutrient;
 import com.fooddb.usda.USDAApi;
 import com.fooddb.usda.USDADatabase;
 
